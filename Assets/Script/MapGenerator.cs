@@ -20,6 +20,7 @@ public class MapGenerator : MonoBehaviour
             tile.transform.position = new Vector3(0, 0, zPos);
             tile.GetComponent<MapMover>().SetGenerator(this);
             activeTiles.Enqueue(tile);
+            tile.GetComponent<MapTile>().SpawnObstacle();
         }
     }
 
