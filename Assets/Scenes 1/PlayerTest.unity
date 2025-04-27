@@ -265,7 +265,6 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 5531817113804314824, guid: 598d57333694ea44a916d719387e9d29, type: 3}
-<<<<<<< Updated upstream
       propertyPath: m_LocalScale.x
       value: 1.5
       objectReference: {fileID: 0}
@@ -278,8 +277,6 @@ PrefabInstance:
       value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 5531817113804314824, guid: 598d57333694ea44a916d719387e9d29, type: 3}
-=======
->>>>>>> Stashed changes
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
