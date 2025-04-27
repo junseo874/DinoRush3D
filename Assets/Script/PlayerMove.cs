@@ -112,7 +112,7 @@ public class PlayerMove : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.tag == "Hurdle")
+        if (collision.gameObject.tag == "Obstacle")
         {
             _playerAnimator.SetTrigger("Death");
             _playerAnimator.SetBool("Run", false);
