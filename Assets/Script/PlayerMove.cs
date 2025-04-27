@@ -7,6 +7,8 @@ using UnityEngine.UIElements.Experimental;
 
 public class PlayerMove : MonoBehaviour
 {
+
+
     [Header("Movement Settings")]
     [SerializeField]
     private float LaneDistance = 4f;// 레인 거리
@@ -23,10 +25,13 @@ public class PlayerMove : MonoBehaviour
     [SerializeField]
     private bool isGrounded;
 
+    private PlayerInput _playerInput;
+    private InputAction _slidingAction;
     private Vector3 _targetPosition;
     private bool _isMoving = false;
     private Rigidbody _rigidbody;
-
+    private Animator _playerAnimator;
+    private bool _playerDeath = false;
 
     private void Awake()
     {
@@ -35,6 +40,9 @@ public class PlayerMove : MonoBehaviour
         isSliding = false;
         _rigidbody = GetComponent<Rigidbody>();
         Physics.gravity = new Vector3(0, -20f, 0);
+        _playerAnimator = GetComponent<Animator>();
+        _playerInput = GetComponent<PlayerInput>();
+        _slidingAction = _playerInput.actions.FindAction("Slide", true);
     }
 
 
@@ -42,8 +50,8 @@ public class PlayerMove : MonoBehaviour
 
     private void Update()
     {
-        CheckGrounded();
-    
+
+
     }
 
     private void FixedUpdate()
@@ -71,22 +79,27 @@ public class PlayerMove : MonoBehaviour
 
     public void Jump(InputAction.CallbackContext context)
     {
-        if (context.started && !_isMoving &&!isJumping&&!isSliding&&isGrounded)
+
+        if (context.started && !_isMoving && !isJumping && !isSliding && isGrounded)
         {
             _rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-           isJumping=true;
+            isJumping = true;
+            isGrounded = false;
+            _playerAnimator.SetTrigger("Jump");
+            _playerAnimator.SetBool("Run", false);
         }
-        isJumping = false;
     }
 
     public void Sliding(InputAction.CallbackContext context)
     {
         if (context.started && !_isMoving && !isJumping && !isSliding&&isGrounded)
         {
-
             isSliding = true;
         }
-        isSliding = false;
+        else if(context.canceled)
+        {
+            isSliding=false; 
+        }
     }
 
     public void MoveDeley(InputAction.CallbackContext context)
@@ -96,23 +109,26 @@ public class PlayerMove : MonoBehaviour
             _isMoving = false; // 버튼을 놓으면 이동 상태 초기화
         }
     }
-    private void CheckGrounded()
+
+    private void OnCollisionEnter(Collision collision)
     {
-        if (transform.position.y <=1 &&isJumping == false)
+        if (collision.gameObject.tag == "Hurdle")
+        {
+            _playerAnimator.SetTrigger("Death");
+            _playerAnimator.SetBool("Run", false);
+
+            Debug.Log("Game Over");
+            _playerDeath = true;
+        }
+
+        if(collision.gameObject.tag == "Ground")
         {
             isGrounded = true;
-        }
-        else
-        {
-            isGrounded = false;
+            isJumping = false;
+            _playerAnimator.SetBool("Run",true);
+
         }
 
     }
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.tag == "Hurdle")
-        {
-            Debug.Log("Game Over");
-        }
-    }
+
 }
