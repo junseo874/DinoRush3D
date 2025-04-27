@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements.Experimental;
 
-public class PlayerMove : MonoBehaviour
+public class Move : MonoBehaviour
 {
 
 
@@ -92,19 +92,19 @@ public class PlayerMove : MonoBehaviour
 
     public void Sliding(InputAction.CallbackContext context)
     {
-        if (context.started && !_isMoving && !isJumping && !isSliding&&isGrounded)
+        if (context.started && !_isMoving && !isJumping && !isSliding && isGrounded)
         {
             isSliding = true;
         }
-        else if(context.canceled)
+        else if (context.canceled)
         {
-            isSliding=false; 
+            isSliding = false;
         }
     }
 
     public void MoveDeley(InputAction.CallbackContext context)
     {
-        if (context.started && !_isMoving&&context.canceled)
+        if (context.started && !_isMoving && context.canceled)
         {
             _isMoving = false; // 버튼을 놓으면 이동 상태 초기화
         }
@@ -121,11 +121,11 @@ public class PlayerMove : MonoBehaviour
             _playerDeath = true;
         }
 
-        if(collision.gameObject.tag == "Ground")
+        if (collision.gameObject.tag == "Ground")
         {
             isGrounded = true;
             isJumping = false;
-            _playerAnimator.SetBool("Run",true);
+            _playerAnimator.SetBool("Run", true);
 
         }
 

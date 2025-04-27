@@ -66,9 +66,6 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: -927199367670048503, guid: 6bcc76aebcc27f641a1ba39f7e8e5fe6, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 3654654454068267530}
-    - targetCorrespondingSourceObject: {fileID: -927199367670048503, guid: 6bcc76aebcc27f641a1ba39f7e8e5fe6, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 8540250643216046681}
     - targetCorrespondingSourceObject: {fileID: -927199367670048503, guid: 6bcc76aebcc27f641a1ba39f7e8e5fe6, type: 3}
       insertIndex: -1
@@ -82,25 +79,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: -927199367670048503, guid: 6bcc76aebcc27f641a1ba39f7e8e5fe6, type: 3}
   m_PrefabInstance: {fileID: 702071802572190674}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &3654654454068267530
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8835973974340758235}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84602509e03ef274fa0dafbee1863fc1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  LaneDistance: 4
-  laneSwitchSpeed: 30
-  jumpForce: 10
-  isJumping: 0
-  isSliding: 0
-  currentLane: 1
-  isGrounded: 0
 --- !u!114 &8540250643216046681
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -128,7 +106,7 @@ MonoBehaviour:
   m_ActionEvents:
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3654654454068267530}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PlayerMove, Assembly-CSharp
         m_MethodName: MoveLeft
         m_Mode: 0
@@ -144,7 +122,7 @@ MonoBehaviour:
     m_ActionName: 'Player/Move Left[/Keyboard/leftArrow]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3654654454068267530}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PlayerMove, Assembly-CSharp
         m_MethodName: MoveRIght
         m_Mode: 0
@@ -160,7 +138,7 @@ MonoBehaviour:
     m_ActionName: 'Player/Move RIght[/Keyboard/rightArrow]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3654654454068267530}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PlayerMove, Assembly-CSharp
         m_MethodName: Jump
         m_Mode: 0
@@ -176,7 +154,7 @@ MonoBehaviour:
     m_ActionName: 'Player/Jump[/Keyboard/upArrow]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3654654454068267530}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PlayerMove, Assembly-CSharp
         m_MethodName: Sliding
         m_Mode: 0

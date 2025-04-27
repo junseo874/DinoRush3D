@@ -256,6 +256,30 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!1 &732085282 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8835973974340758235, guid: 598d57333694ea44a916d719387e9d29, type: 3}
+  m_PrefabInstance: {fileID: 942810214}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &732085289
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 732085282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 982ac10fd34e615488f27bf2e6f99441, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LaneDistance: 4
+  laneSwitchSpeed: 30
+  jumpForce: 10
+  isJumping: 0
+  isSliding: 0
+  currentLane: 1
+  isGrounded: 0
 --- !u!1001 &942810214
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -316,6 +340,66 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8540250643216046681, guid: 598d57333694ea44a916d719387e9d29, type: 3}
+      propertyPath: m_DeviceLostEvent.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8540250643216046681, guid: 598d57333694ea44a916d719387e9d29, type: 3}
+      propertyPath: m_DeviceLostEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8540250643216046681, guid: 598d57333694ea44a916d719387e9d29, type: 3}
+      propertyPath: m_DeviceLostEvent.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8540250643216046681, guid: 598d57333694ea44a916d719387e9d29, type: 3}
+      propertyPath: m_ActionEvents.Array.data[0].m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 732085289}
+    - target: {fileID: 8540250643216046681, guid: 598d57333694ea44a916d719387e9d29, type: 3}
+      propertyPath: m_ActionEvents.Array.data[1].m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 732085289}
+    - target: {fileID: 8540250643216046681, guid: 598d57333694ea44a916d719387e9d29, type: 3}
+      propertyPath: m_ActionEvents.Array.data[2].m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 732085289}
+    - target: {fileID: 8540250643216046681, guid: 598d57333694ea44a916d719387e9d29, type: 3}
+      propertyPath: m_ActionEvents.Array.data[3].m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 732085289}
+    - target: {fileID: 8540250643216046681, guid: 598d57333694ea44a916d719387e9d29, type: 3}
+      propertyPath: m_ActionEvents.Array.data[0].m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: MoveLeft
+      objectReference: {fileID: 0}
+    - target: {fileID: 8540250643216046681, guid: 598d57333694ea44a916d719387e9d29, type: 3}
+      propertyPath: m_ActionEvents.Array.data[1].m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: MoveRIght
+      objectReference: {fileID: 0}
+    - target: {fileID: 8540250643216046681, guid: 598d57333694ea44a916d719387e9d29, type: 3}
+      propertyPath: m_ActionEvents.Array.data[2].m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Jump
+      objectReference: {fileID: 0}
+    - target: {fileID: 8540250643216046681, guid: 598d57333694ea44a916d719387e9d29, type: 3}
+      propertyPath: m_ActionEvents.Array.data[3].m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Sliding
+      objectReference: {fileID: 0}
+    - target: {fileID: 8540250643216046681, guid: 598d57333694ea44a916d719387e9d29, type: 3}
+      propertyPath: m_ActionEvents.Array.data[0].m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: Move, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 8540250643216046681, guid: 598d57333694ea44a916d719387e9d29, type: 3}
+      propertyPath: m_ActionEvents.Array.data[1].m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: Move, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 8540250643216046681, guid: 598d57333694ea44a916d719387e9d29, type: 3}
+      propertyPath: m_ActionEvents.Array.data[2].m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: Move, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 8540250643216046681, guid: 598d57333694ea44a916d719387e9d29, type: 3}
+      propertyPath: m_ActionEvents.Array.data[3].m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: Move, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 8835973974340758235, guid: 598d57333694ea44a916d719387e9d29, type: 3}
       propertyPath: m_Name
       value: Player
@@ -323,7 +407,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8835973974340758235, guid: 598d57333694ea44a916d719387e9d29, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 732085289}
   m_SourcePrefab: {fileID: 100100000, guid: 598d57333694ea44a916d719387e9d29, type: 3}
 --- !u!1 &1289823093
 GameObject:
