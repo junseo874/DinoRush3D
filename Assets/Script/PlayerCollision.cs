@@ -1,11 +1,11 @@
 using System;
 using UnityEngine;
+using System.Collections;
 
 public class PlayerCollision : MonoBehaviour
 {
     private bool isDead = false;
     public ButtonManager buttonManager;
-
 
 
     private void OnTriggerEnter(Collider other)
@@ -20,6 +20,18 @@ public class PlayerCollision : MonoBehaviour
         }
     }
 
+    public void ActivateInvincibility(float duration)
+    {
+        StartCoroutine(InvincibilityCoroutine(duration));
+    }
+
+    private IEnumerator InvincibilityCoroutine(float duration)
+    {
+        isDead = true;
+        yield return new WaitForSeconds(duration);
+        isDead = false;
+    }
+    
     void GameOver()
     {
         // 게임 멈추기

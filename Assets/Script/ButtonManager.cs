@@ -5,6 +5,10 @@ public class ButtonManager : MonoBehaviour
 {
     public GameObject gameOverUI;
 
+    void Awake()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
     public void ShowGameOver()
     {
         gameOverUI.SetActive(true);

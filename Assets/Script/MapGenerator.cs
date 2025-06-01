@@ -21,6 +21,7 @@ public class MapGenerator : MonoBehaviour
             tile.GetComponent<MapMover>().SetGenerator(this);
             activeTiles.Enqueue(tile);
             tile.GetComponent<MapTile>().SpawnObstacle();
+            tile.GetComponent<MapTile>().SpawnItem();
         }
     }
 

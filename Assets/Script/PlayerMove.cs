@@ -4,6 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements.Experimental;
+using System.Collections;
 
 public class PlayerMove : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class PlayerMove : MonoBehaviour
 
     [Header("Movement Settings")]
     [SerializeField]
-    private float LaneDistance = 4f;// ·¹ÀÎ °Å¸®
+    private float LaneDistance = 4f;// ï¿½ï¿½ï¿½ï¿½ ï¿½Å¸ï¿½
     [SerializeField]
     private float laneSwitchSpeed = 30f;
     [SerializeField]
@@ -21,7 +22,7 @@ public class PlayerMove : MonoBehaviour
     [SerializeField]
     private bool isSliding = false;
     [SerializeField]
-    private int currentLane = 1;//0 ¿ŞÂÊ, 1 °¡¿îµ¥, 2 ¿À¸¥ÂÊ
+    private int currentLane = 1;//0 ï¿½ï¿½ï¿½ï¿½, 1 ï¿½ï¿½ï¿½îµ¥, 2 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     [SerializeField]
     private bool isGrounded;
 
@@ -101,12 +102,25 @@ public class PlayerMove : MonoBehaviour
             isSliding=false; 
         }
     }
+    
+    public void ActivateSpeedBoost(float duration)
+    {
+        StartCoroutine(SpeedBoostCoroutine(duration));
+    }
+
+    private IEnumerator SpeedBoostCoroutine(float duration)
+    {
+        float originalSpeed = laneSwitchSpeed;
+        laneSwitchSpeed *= 2f; // ì˜ˆì‹œ: ì†ë„ 2ë°°
+        yield return new WaitForSeconds(duration);
+        laneSwitchSpeed = originalSpeed;
+    }
 
     public void MoveDeley(InputAction.CallbackContext context)
     {
         if (context.started && !_isMoving&&context.canceled)
         {
-            _isMoving = false; // ¹öÆ°À» ³õÀ¸¸é ÀÌµ¿ »óÅÂ ÃÊ±âÈ­
+            _isMoving = false; // ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­
         }
     }
 

@@ -3,7 +3,7 @@ using UnityEngine;
 public class MapMover : MonoBehaviour
 {
     public float moveSpeed = 10f;
-    public float removeZ = -15f;
+    public float removeZ = -30f;
 
     private MapGenerator generator;
 

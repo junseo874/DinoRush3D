@@ -1,12 +1,11 @@
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 
 public class ScoreManager : MonoBehaviour
 {
-    public TextMeshProUGUI scoreText; // 점수 표시용 Text
+    public TextMeshProUGUI scoreText;
     public float score;
-    public float scoreIncreaseRate = 10f; // 초당 점수 증가량
+    public float scoreIncreaseRate = 10f;
 
     private bool isGameOver = false;
 
@@ -14,13 +13,17 @@ public class ScoreManager : MonoBehaviour
     {
         if (isGameOver) return;
 
-        // 점수 증가 (시간 기반)
-        score += scoreIncreaseRate * Time.deltaTime;
-        scoreText.text = Mathf.FloorToInt(score).ToString(); // 정수로 표시
+        AddScore(scoreIncreaseRate * Time.deltaTime);
     }
 
     public void StopScoring()
     {
         isGameOver = true;
+    }
+
+    public void AddScore(float amount)
+    {
+        score += amount;
+        scoreText.text = Mathf.FloorToInt(score).ToString(); // 점수 UI도 함께 갱신
     }
 }
