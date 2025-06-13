@@ -304,6 +304,7 @@ MonoBehaviour:
   - {fileID: 4484589327391757525}
   obstaclePrefabs:
   - {fileID: 6779989705008111781, guid: c2fb9e801c5724914ae29a6fa772a684, type: 3}
+  - {fileID: 6779989705008111781, guid: fafa6fe87e36c42d3b8966f0692c915c, type: 3}
   itemSpawnPoints:
   - {fileID: 174241382949182853}
   - {fileID: 9060250619713070120}

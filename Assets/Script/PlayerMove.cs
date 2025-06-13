@@ -103,6 +103,11 @@ public class PlayerMove : MonoBehaviour
         }
     }
     
+    public void Death()
+    {
+        Debug.Log("Death animation event triggered");
+    }
+    
     public void ActivateSpeedBoost(float duration)
     {
         StartCoroutine(SpeedBoostCoroutine(duration));

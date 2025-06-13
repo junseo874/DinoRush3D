@@ -32,7 +32,7 @@ public class PlayerCollision : MonoBehaviour
         isDead = false;
     }
     
-    void GameOver()
+    public void GameOver()
     {
         // 게임 멈추기
         Time.timeScale = 0f;
