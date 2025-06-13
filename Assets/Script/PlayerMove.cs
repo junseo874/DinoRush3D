@@ -2,6 +2,7 @@ using System;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Experimental.GlobalIllumination;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements.Experimental;
 
@@ -24,9 +25,10 @@ public class PlayerMove : MonoBehaviour
     private int currentLane = 1;//0 왼쪽, 1 가운데, 2 오른쪽
     [SerializeField]
     private bool isGrounded;
+    [SerializeField]
+    private float gravityVal=-15f;
 
     private PlayerInput _playerInput;
-    private InputAction _slidingAction;
     private Vector3 _targetPosition;
     private bool _isMoving = false;
     private Rigidbody _rigidbody;
@@ -39,10 +41,9 @@ public class PlayerMove : MonoBehaviour
         isJumping = false;
         isSliding = false;
         _rigidbody = GetComponent<Rigidbody>();
-        Physics.gravity = new Vector3(0, -20f, 0);
+        Physics.gravity = new Vector3(0, gravityVal, 0);
         _playerAnimator = GetComponent<Animator>();
         _playerInput = GetComponent<PlayerInput>();
-        _slidingAction = _playerInput.actions.FindAction("Slide", true);
     }
 
 
@@ -92,13 +93,15 @@ public class PlayerMove : MonoBehaviour
 
     public void Sliding(InputAction.CallbackContext context)
     {
-        if (context.started && !_isMoving && !isJumping && !isSliding&&isGrounded)
+        if (context.performed && !_isMoving && !isJumping && !isSliding&&isGrounded)
         {
             isSliding = true;
+            _playerAnimator.SetTrigger("Slide");
+            _playerAnimator.SetBool("Run", false); 
         }
         else if(context.canceled)
         {
-            isSliding=false; 
+            isSliding=false;
         }
     }
 
@@ -106,7 +109,11 @@ public class PlayerMove : MonoBehaviour
     {
         if (context.started && !_isMoving&&context.canceled)
         {
+<<<<<<< Updated upstream
             _isMoving = false; // 버튼을 놓으면 이동 상태 초기화
+=======
+            _isMoving = false; 
+>>>>>>> Stashed changes
         }
     }
 
@@ -121,11 +128,11 @@ public class PlayerMove : MonoBehaviour
             _playerDeath = true;
         }
 
-        if(collision.gameObject.tag == "Ground")
+        if (collision.gameObject.tag == "Ground" && isSliding == false) 
         {
+            _playerAnimator.SetBool("Run",true);
             isGrounded = true;
             isJumping = false;
-            _playerAnimator.SetBool("Run",true);
 
         }
 
