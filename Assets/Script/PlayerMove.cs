@@ -2,7 +2,6 @@ using System;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Experimental.GlobalIllumination;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements.Experimental;
 
@@ -12,7 +11,11 @@ public class PlayerMove : MonoBehaviour
 
     [Header("Movement Settings")]
     [SerializeField]
+<<<<<<< Updated upstream
     private float LaneDistance = 4f;// ·¹ÀÎ °Å¸®
+=======
+    private float LaneDistance = 4f;// ë ˆì¸ ê±°ë¦¬
+>>>>>>> Stashed changes
     [SerializeField]
     private float laneSwitchSpeed = 30f;
     [SerializeField]
@@ -22,13 +25,16 @@ public class PlayerMove : MonoBehaviour
     [SerializeField]
     private bool isSliding = false;
     [SerializeField]
+<<<<<<< Updated upstream
     private int currentLane = 1;//0 ¿ÞÂÊ, 1 °¡¿îµ¥, 2 ¿À¸¥ÂÊ
+=======
+    private int currentLane = 1;//0 ì™¼ìª½, 1 ê°€ìš´ë°, 2 ì˜¤ë¥¸ìª½
+>>>>>>> Stashed changes
     [SerializeField]
     private bool isGrounded;
-    [SerializeField]
-    private float gravityVal=-15f;
 
     private PlayerInput _playerInput;
+    private InputAction _slidingAction;
     private Vector3 _targetPosition;
     private bool _isMoving = false;
     private Rigidbody _rigidbody;
@@ -41,9 +47,10 @@ public class PlayerMove : MonoBehaviour
         isJumping = false;
         isSliding = false;
         _rigidbody = GetComponent<Rigidbody>();
-        Physics.gravity = new Vector3(0, gravityVal, 0);
+        Physics.gravity = new Vector3(0, -20f, 0);
         _playerAnimator = GetComponent<Animator>();
         _playerInput = GetComponent<PlayerInput>();
+        _slidingAction = _playerInput.actions.FindAction("Slide", true);
     }
 
 
@@ -93,26 +100,31 @@ public class PlayerMove : MonoBehaviour
 
     public void Sliding(InputAction.CallbackContext context)
     {
-        if (context.performed && !_isMoving && !isJumping && !isSliding&&isGrounded)
+        if (context.performed && !_isMoving && !isJumping && !isSliding && isGrounded)
         {
             isSliding = true;
             _playerAnimator.SetTrigger("Slide");
-            _playerAnimator.SetBool("Run", false); 
+            _playerAnimator.SetBool("Run", false);
         }
-        else if(context.canceled)
+        else if (context.canceled)
         {
-            isSliding=false;
+            isSliding = false;
+            _playerAnimator.SetBool("Run", true);
         }
     }
 
     public void MoveDeley(InputAction.CallbackContext context)
     {
-        if (context.started && !_isMoving&&context.canceled)
+        if (context.started && !_isMoving && context.canceled)
         {
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
             _isMoving = false; // ¹öÆ°À» ³õÀ¸¸é ÀÌµ¿ »óÅÂ ÃÊ±âÈ­
 =======
             _isMoving = false; 
+>>>>>>> Stashed changes
+=======
+            _isMoving = false; // ë²„íŠ¼ì„ ë†“ìœ¼ë©´ ì´ë™ ìƒíƒœ ì´ˆê¸°í™”
 >>>>>>> Stashed changes
         }
     }
@@ -128,11 +140,11 @@ public class PlayerMove : MonoBehaviour
             _playerDeath = true;
         }
 
-        if (collision.gameObject.tag == "Ground" && isSliding == false) 
+        if (collision.gameObject.tag == "Ground")
         {
-            _playerAnimator.SetBool("Run",true);
             isGrounded = true;
             isJumping = false;
+            _playerAnimator.SetBool("Run", true);
 
         }
 
