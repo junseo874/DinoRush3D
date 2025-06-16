@@ -1,13 +1,14 @@
+// 수정된 LoginClient.cs - GameSession 확인 후 StartPanel만 표시
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
-using System.Net.Sockets;
-using System.IO;
-using System.Text;
-using System;
-using System.Threading;
 using UnityEngine.SceneManagement;
-using System.Collections.Generic;
 
 public class LoginClient : MonoBehaviour
 {
@@ -33,34 +34,57 @@ public class LoginClient : MonoBehaviour
     private StreamReader reader;
     private StreamWriter writer;
     private Thread receiveThread;
+    private bool isConnected = false;
+
+    private readonly Queue<string> chatQueue = new Queue<string>();
+    private readonly Queue<string[]> rankingQueue = new Queue<string[]>();
 
     private string username;
     private int highScore;
     private bool loginSuccessFlag = false;
 
-    private readonly Queue<string> chatQueue = new Queue<string>();
-    private readonly Queue<string[]> rankingQueue = new Queue<string[]>();
-
-    private bool isConnected = false;
-
-    private void Awake()
-    {
-        DontDestroyOnLoad(gameObject); // 씬 재시작 시 유지
-    }
-
     void Start()
     {
-        Time.timeScale = 0f;
+        if (SceneManager.GetActiveScene().name == "GameScene")
+        {
+            Destroy(this.gameObject);
+            return;
+        }
 
-        loginPanel.SetActive(true);
+        Time.timeScale = 0;
+
+        // 일단 두 패널 다 끄고 시작
+        loginPanel.SetActive(false);
         startPanel.SetActive(false);
 
         ConnectToServer("127.0.0.1", 7777);
 
-        loginBtn.onClick.AddListener(OnLogin);
-        sendBtn.onClick.AddListener(SendChatMessage);
-        startBtn.onClick.AddListener(OnStartGame);
-        quitBtn.onClick.AddListener(OnQuitGame);
+        // UI 버튼 연결
+        if (loginBtn != null) loginBtn.onClick.AddListener(OnLogin);
+        if (sendBtn != null) sendBtn.onClick.AddListener(SendChatMessage);
+        if (startBtn != null) startBtn.onClick.AddListener(OnStartGame);
+        if (quitBtn != null) quitBtn.onClick.AddListener(OnQuitGame);
+
+        // 클라이언트 세션이 유지된 상태면 StartPanel만 띄우고 정보 복원
+        if (GameSession.Instance != null && GameSession.Instance.Client != null)
+        {
+            loginPanel.SetActive(false);
+            startPanel.SetActive(true);
+
+            username = GameSession.Instance.Username;
+            highScore = GameSession.Instance.HighScore;
+
+            playerNameText.text = username;
+            playerHighScoreText.text = $"최고 점수: {highScore}";
+
+            RequestRankings();
+            Debug.Log("[LoginClient] 이전 세션 유지 - StartPanel 표시");
+        }
+        else
+        {
+            // 처음 실행 시: 로그인 패널 띄우기
+            loginPanel.SetActive(true);
+        }
     }
 
     void ConnectToServer(string ip, int port)
@@ -77,11 +101,11 @@ public class LoginClient : MonoBehaviour
             receiveThread.IsBackground = true;
             receiveThread.Start();
 
-            Debug.Log("[LoginClient] 서버 연결 성공");
+            Debug.Log("[Client] 서버에 연결됨");
         }
         catch (Exception e)
         {
-            Debug.LogError("[LoginClient] 서버 연결 실패: " + e.Message);
+            Debug.LogError("[Client] 연결 실패: " + e.Message);
         }
     }
 
@@ -94,7 +118,7 @@ public class LoginClient : MonoBehaviour
                 string message = reader.ReadLine();
                 if (string.IsNullOrEmpty(message)) continue;
 
-                Debug.Log("[서버 수신] " + message);
+                Debug.Log("[Client] 수신 메시지: " + message);
 
                 if (message.StartsWith("LOGIN_SUCCESS"))
                 {
@@ -102,26 +126,34 @@ public class LoginClient : MonoBehaviour
                     username = parts[1];
                     highScore = int.Parse(parts[2]);
 
-                    loginSuccessFlag = true;
-
                     lock (chatQueue)
-                        chatQueue.Enqueue($"[시스템] 로그인 성공 - {username} / 최고 점수: {highScore}");
+                    {
+                        chatQueue.Enqueue($"로그인 성공: {username} / 최고 점수: {highScore}");
+                    }
+
+                    loginSuccessFlag = true;
                 }
                 else if (message.StartsWith("RANKINGS:"))
                 {
-                    string[] rankings = message.Substring("RANKINGS:".Length).Split('|');
+                    string raw = message.Substring("RANKINGS:".Length);
+                    string[] lines = raw.Split('|');
+
                     lock (rankingQueue)
-                        rankingQueue.Enqueue(rankings);
+                    {
+                        rankingQueue.Enqueue(lines);
+                    }
                 }
                 else
                 {
                     lock (chatQueue)
+                    {
                         chatQueue.Enqueue(message);
+                    }
                 }
             }
             catch (Exception e)
             {
-                Debug.LogError("[서버 수신 오류] " + e.Message);
+                Debug.LogWarning("[Client] 수신 오류 (무시): " + e.Message);
                 isConnected = false;
             }
         }
@@ -133,14 +165,13 @@ public class LoginClient : MonoBehaviour
         {
             loginSuccessFlag = false;
 
-            loginPanel.SetActive(false);
-            startPanel.SetActive(true);
-            Time.timeScale = 0f;
+            if (loginPanel != null) loginPanel.SetActive(false);
+            if (startPanel != null) startPanel.SetActive(true);
+            Time.timeScale = 0;
 
             playerNameText.text = username;
             playerHighScoreText.text = $"최고 점수: {highScore}";
 
-            ScoreManager.Instance.Initialize(username, client, highScore);
             RequestRankings();
         }
 
@@ -157,13 +188,16 @@ public class LoginClient : MonoBehaviour
         {
             while (rankingQueue.Count > 0)
             {
-                string[] ranks = rankingQueue.Dequeue();
+                string[] lines = rankingQueue.Dequeue();
                 for (int i = 0; i < rankingDisplays.Length; i++)
                 {
-                    if (i < ranks.Length)
+                    if (i < lines.Length)
                     {
-                        string[] parts = ranks[i].Split(',');
-                        rankingDisplays[i].text = $"[{i + 1}등] {parts[0]} : {parts[1]}점";
+                        string[] parts = lines[i].Split(',');
+                        if (parts.Length == 2)
+                        {
+                            rankingDisplays[i].text = $"[{i + 1}등] {parts[0]} : {parts[1]}점";
+                        }
                     }
                     else
                     {
@@ -183,16 +217,16 @@ public class LoginClient : MonoBehaviour
 
         if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(pw)) return;
 
-        string loginMessage = $"LOGIN:{id}:{pw}";
-        writer.WriteLine(loginMessage);
+        string msg = $"LOGIN:{id}:{pw}";
+        writer.WriteLine(msg);
     }
 
     public void SendChatMessage()
     {
-        if (!isConnected || string.IsNullOrEmpty(chatInput.text)) return;
+        if (!isConnected || string.IsNullOrWhiteSpace(chatInput.text)) return;
 
-        string message = $"{username}: {chatInput.text}";
-        writer.WriteLine(message);
+        string chatMsg = $"{username}: {chatInput.text}";
+        writer.WriteLine(chatMsg);
         chatInput.text = "";
     }
 
@@ -203,19 +237,29 @@ public class LoginClient : MonoBehaviour
 
     void OnStartGame()
     {
-        Debug.Log("[시작] 게임 시작 버튼 클릭됨");
-        Time.timeScale = 1f;
+        Debug.Log("[LoginClient] 게임 시작 - GameSession에 정보 저장 후 GameScene 로드");
 
-        // 씬 리로드 전 점수 리셋
-        ScoreManager.Instance.ResetScore();
+        if (GameSession.Instance != null)
+        {
+            GameSession.Instance.Initialize(username, highScore, client);
+        }
+        else
+        {
+            Debug.LogError("[LoginClient] GameSession.Instance가 존재하지 않습니다.");
+        }
 
-        // 씬 다시 로드
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        var scoreManagerObj = GameObject.Find("ScoreManager");
+        if (scoreManagerObj != null)
+        {
+            DontDestroyOnLoad(scoreManagerObj);
+        }
+
+        SceneManager.LoadScene("GameScene");
     }
 
     void OnQuitGame()
     {
-        Debug.Log("[종료] 게임 종료 버튼 클릭됨");
+        Debug.Log("게임 종료");
         Application.Quit();
     }
 
@@ -225,14 +269,5 @@ public class LoginClient : MonoBehaviour
         reader?.Close();
         writer?.Close();
         client?.Close();
-    }
-
-    public void SendScoreToServer(int finalScore)
-    {
-        if (writer == null || !client.Connected) return;
-
-        string message = $"SAVE_SCORE/{username}/{finalScore}";
-        writer.WriteLine(message);
-        Debug.Log($"[LoginClient] 서버로 점수 전송: {message}");
     }
 }

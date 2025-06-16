@@ -1,75 +1,55 @@
-using System.Collections;
+using System.IO;
+using System.Net.Sockets;
+using System.Text;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerCollision : MonoBehaviour
 {
-    private bool isDead = false;
-    private bool isInvincible = false;
+    private bool isGameOver = false;
+    private ScoreManager scoreManager;
 
-    public LoginClient loginClient;
-
-    private void OnTriggerEnter(Collider other)
+    void Start()
     {
-        if (isDead || isInvincible) return;
+        scoreManager = FindObjectOfType<ScoreManager>();
+    }
 
-        if (other.CompareTag("Obstacle"))
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (isGameOver) return;
+
+        if (collision.gameObject.CompareTag("Obstacle"))
         {
-            isDead = true;
-            Debug.Log("[충돌] 플레이어가 장애물에 부딪혔습니다.");
+            isGameOver = true;
             GameOver();
         }
-        else if (other.CompareTag("Item"))
-        {
-            Debug.Log("[충돌] 아이템 획득!");
-            ScoreManager.Instance.AddScore(10);
-            other.gameObject.SetActive(false);
-        }
     }
 
-    public void ActivateInvincibility(float duration)
+    void GameOver()
     {
-        if (!isInvincible)
+        int finalScore = scoreManager.CurrentScore;
+
+        if (GameSession.Instance != null)
         {
-            StartCoroutine(InvincibilityCoroutine(duration));
-        }
-    }
-
-    private IEnumerator InvincibilityCoroutine(float duration)
-    {
-        isInvincible = true;
-        Debug.Log("[무적] 시작");
-        yield return new WaitForSeconds(duration);
-        isInvincible = false;
-        Debug.Log("[무적] 종료");
-    }
-
-    public void GameOver()
-    {
-        Debug.Log("[게임 오버] Time.timeScale = 0");
-
-        Time.timeScale = 0f;
-
-        if (loginClient != null && loginClient.startPanel != null)
-        {
-            loginClient.startPanel.SetActive(true);
-        }
-        else
-        {
-            Debug.LogWarning("[GameOver] loginClient 또는 startPanel이 연결되지 않았습니다.");
+            TcpClient client = GameSession.Instance.Client;
+            if (client != null && client.Connected)
+            {
+                try
+                {
+                    using (var stream = client.GetStream())
+                    using (var writer = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true })
+                    {
+                        writer.WriteLine($"SAVE_SCORE:{GameSession.Instance.Username}:{finalScore}");
+                    }
+                }
+                catch
+                {
+                    Debug.LogWarning("점수 전송 실패");
+                }
+            }
         }
 
-        if (ScoreManager.Instance != null)
-        {
-            int finalScore = ScoreManager.Instance.GetCurrentScore();
-            Debug.Log($"[게임 오버] 최종 점수: {finalScore}");
-
-            ScoreManager.Instance.SendScoreToServer();
-        }
-    }
-
-    public void ResetState()
-    {
-        isDead = false;
-        isInvincible = false;
+        Debug.Log("[GameOver] 점수 저장 후 LoginScene으로 복귀");
+        SceneManager.LoadScene("LoginScene");
     }
 }

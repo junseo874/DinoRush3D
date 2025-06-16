@@ -2,30 +2,18 @@ using UnityEngine;
 
 public class Item : MonoBehaviour
 {
-    public enum ItemType { ScoreBoost, SpeedBoost, Invincibility }
-
-    public ItemType itemType;
-    public float effectDuration = 3f;
+    public int scoreValue = 5;
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.CompareTag("Player")) return;
-
-        GameObject player = other.gameObject;
-
-        switch (itemType)
+        if (other.CompareTag("Player"))
         {
-            case ItemType.ScoreBoost:
-                player.GetComponent<ScoreManager>().AddScore(100);
-                break;
-            case ItemType.SpeedBoost:
-                player.GetComponent<PlayerMove>().ActivateSpeedBoost(effectDuration);
-                break;
-            case ItemType.Invincibility:
-                player.GetComponent<PlayerCollision>().ActivateInvincibility(effectDuration);
-                break;
+            ScoreManager scoreManager = FindObjectOfType<ScoreManager>();
+            if (scoreManager != null)
+            {
+                scoreManager.AddScore(scoreValue);
+            }
+            Destroy(gameObject);
         }
-
-        Destroy(gameObject);
     }
 }
