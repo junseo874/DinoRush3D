@@ -15,8 +15,7 @@ using System.Collections;
 
 public class PlayerMove : MonoBehaviour
 {
-    [Header("Movement Settings")]
-    [SerializeField] private float LaneDistance = 4f;         // 레인 간 거리
+    [Header("Movement Settings")]    [SerializeField] private float LaneDistance = 4f;         // 레인 간 거리
     [SerializeField] private float laneSwitchSpeed = 30f;     // 레인 전환 속도
     [SerializeField] private float jumpForce = 20f;           // 점프 힘
     [SerializeField] private bool isJumping = false;          // 점프 중 여부
@@ -31,6 +30,28 @@ public class PlayerMove : MonoBehaviour
     private Rigidbody _rigidbody;                             // 물리 제어
     private Animator _playerAnimator;                         // 애니메이션 제어
     private bool _playerDeath = false;                        // 사망 여부
+    [SerializeField]
+    private float LaneDistance = 4f;// 레인 거리
+    [SerializeField]
+    private float laneSwitchSpeed = 30f;
+    [SerializeField]
+    private float jumpForce = 20;
+    [SerializeField]
+    private bool isJumping = false;
+    [SerializeField]
+    private bool isSliding = false;
+    [SerializeField]
+    private int currentLane = 1;//0 왼쪽, 1 가운데, 2 오른쪽
+    [SerializeField]
+    private bool isGrounded;
+
+    private PlayerInput _playerInput;
+    private InputAction _slidingAction;
+    private Vector3 _targetPosition;
+    private bool _isMoving = false;
+    private Rigidbody _rigidbody;
+    private Animator _playerAnimator;
+    private bool _playerDeath = false;
 
     private void Awake()
     {
@@ -41,6 +62,7 @@ public class PlayerMove : MonoBehaviour
         Physics.gravity = new Vector3(0, gravityVal, 0); // 사용자 정의 중력 설정
         _playerAnimator = GetComponent<Animator>();
         _playerInput = GetComponent<PlayerInput>();
+        _slidingAction = _playerInput.actions.FindAction("Slide", true);
     }
 
     private void Update()
@@ -93,11 +115,12 @@ public class PlayerMove : MonoBehaviour
         {
             isSliding = true;
             _playerAnimator.SetTrigger("Slide");
-            _playerAnimator.SetBool("Run", false); 
+            _playerAnimator.SetBool("Run", false);
         }
         else if (context.canceled)
         {
             isSliding = false;
+            _playerAnimator.SetBool("Run", true);
         }
     }
 
@@ -127,7 +150,7 @@ public class PlayerMove : MonoBehaviour
     {
         if (context.started && !_isMoving && context.canceled)
         {
-            _isMoving = false;
+            _isMoving = false; // 버튼을 놓으면 이동 상태 초기화
         }
     }
 
@@ -142,7 +165,7 @@ public class PlayerMove : MonoBehaviour
             _playerDeath = true;
         }
 
-        if (collision.gameObject.tag == "Ground" && isSliding == false) 
+        if (collision.gameObject.tag == "Ground")
         {
             _playerAnimator.SetBool("Run", true);
             isGrounded = true;
