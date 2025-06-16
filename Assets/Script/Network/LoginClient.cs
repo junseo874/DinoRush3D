@@ -1,4 +1,11 @@
-// 수정된 LoginClient.cs - GameSession 확인 후 StartPanel만 표시
+// ============================================================================
+// LoginClient.cs - 서버 통신 기반 로그인/채팅/랭킹 UI 제어 클라이언트
+// 목적: TCP로 로그인 및 랭킹 정보 송수신, UI 동기화 및 GameSession 연결 처리
+// 작성자: 이준서
+// 작성일: 2025년 06월 15일
+// 구조: 서버 연결 → 메시지 수신 스레드 → UI 갱신 → GameScene 진입 시 상태 전달
+// ============================================================================
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,6 +19,7 @@ using UnityEngine.SceneManagement;
 
 public class LoginClient : MonoBehaviour
 {
+    // UI 오브젝트 연결
     public GameObject loginPanel;
     public GameObject startPanel;
 
@@ -30,21 +38,25 @@ public class LoginClient : MonoBehaviour
     public Button startBtn;
     public Button quitBtn;
 
+    // 통신 관련
     private TcpClient client;
     private StreamReader reader;
     private StreamWriter writer;
     private Thread receiveThread;
     private bool isConnected = false;
 
+    // 수신 메시지 큐
     private readonly Queue<string> chatQueue = new Queue<string>();
     private readonly Queue<string[]> rankingQueue = new Queue<string[]>();
 
+    // 로그인 정보
     private string username;
     private int highScore;
     private bool loginSuccessFlag = false;
 
     void Start()
     {
+        // GameScene에서는 자동 파괴
         if (SceneManager.GetActiveScene().name == "GameScene")
         {
             Destroy(this.gameObject);
@@ -52,41 +64,40 @@ public class LoginClient : MonoBehaviour
         }
 
         Time.timeScale = 0;
-
-        // 일단 두 패널 다 끄고 시작
         loginPanel.SetActive(false);
         startPanel.SetActive(false);
 
         ConnectToServer("127.0.0.1", 7777);
 
-        // UI 버튼 연결
+        // 버튼 리스너 등록
         if (loginBtn != null) loginBtn.onClick.AddListener(OnLogin);
         if (sendBtn != null) sendBtn.onClick.AddListener(SendChatMessage);
         if (startBtn != null) startBtn.onClick.AddListener(OnStartGame);
         if (quitBtn != null) quitBtn.onClick.AddListener(OnQuitGame);
 
-        // 클라이언트 세션이 유지된 상태면 StartPanel만 띄우고 정보 복원
+        // 이전 세션 정보가 있을 경우 자동 로그인 처리
         if (GameSession.Instance != null && GameSession.Instance.Client != null)
         {
-            loginPanel.SetActive(false);
-            startPanel.SetActive(true);
-
             username = GameSession.Instance.Username;
             highScore = GameSession.Instance.HighScore;
 
             playerNameText.text = username;
             playerHighScoreText.text = $"최고 점수: {highScore}";
 
+            loginPanel.SetActive(false);
+            startPanel.SetActive(true);
+
             RequestRankings();
             Debug.Log("[LoginClient] 이전 세션 유지 - StartPanel 표시");
         }
         else
         {
-            // 처음 실행 시: 로그인 패널 띄우기
             loginPanel.SetActive(true);
+            startPanel.SetActive(false);
         }
     }
 
+    // 서버에 연결
     void ConnectToServer(string ip, int port)
     {
         try
@@ -109,6 +120,7 @@ public class LoginClient : MonoBehaviour
         }
     }
 
+    // 메시지 수신 스레드
     void ReceiveMessages()
     {
         while (isConnected)
@@ -165,8 +177,8 @@ public class LoginClient : MonoBehaviour
         {
             loginSuccessFlag = false;
 
-            if (loginPanel != null) loginPanel.SetActive(false);
-            if (startPanel != null) startPanel.SetActive(true);
+            loginPanel?.SetActive(false);
+            startPanel?.SetActive(true);
             Time.timeScale = 0;
 
             playerNameText.text = username;
@@ -175,6 +187,7 @@ public class LoginClient : MonoBehaviour
             RequestRankings();
         }
 
+        // 채팅 메시지 출력
         lock (chatQueue)
         {
             while (chatQueue.Count > 0)
@@ -184,6 +197,7 @@ public class LoginClient : MonoBehaviour
             }
         }
 
+        // 랭킹 정보 출력
         lock (rankingQueue)
         {
             while (rankingQueue.Count > 0)
@@ -208,6 +222,7 @@ public class LoginClient : MonoBehaviour
         }
     }
 
+    // 로그인 메시지 전송
     void OnLogin()
     {
         if (!isConnected) return;
@@ -221,6 +236,7 @@ public class LoginClient : MonoBehaviour
         writer.WriteLine(msg);
     }
 
+    // 채팅 전송
     public void SendChatMessage()
     {
         if (!isConnected || string.IsNullOrWhiteSpace(chatInput.text)) return;
@@ -230,11 +246,13 @@ public class LoginClient : MonoBehaviour
         chatInput.text = "";
     }
 
+    // 서버에 랭킹 요청
     public void RequestRankings()
     {
         writer.WriteLine("GET_RANKINGS");
     }
 
+    // 게임 시작 버튼 클릭 시
     void OnStartGame()
     {
         Debug.Log("[LoginClient] 게임 시작 - GameSession에 정보 저장 후 GameScene 로드");
