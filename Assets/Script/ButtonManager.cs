@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
+/*
 public class ButtonManager : MonoBehaviour
 {
     public GameObject gameOverUI;
@@ -22,3 +22,4 @@ public class ButtonManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
+*/

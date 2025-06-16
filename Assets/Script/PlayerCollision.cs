@@ -1,42 +1,75 @@
-using System;
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
 public class PlayerCollision : MonoBehaviour
 {
     private bool isDead = false;
-    public ButtonManager buttonManager;
+    private bool isInvincible = false;
 
+    public LoginClient loginClient;
 
     private void OnTriggerEnter(Collider other)
     {
-        if (isDead) return;
+        if (isDead || isInvincible) return;
 
         if (other.CompareTag("Obstacle"))
         {
             isDead = true;
-            Debug.Log("플레이어 사망: 장애물과 충돌함");
+            Debug.Log("[충돌] 플레이어가 장애물에 부딪혔습니다.");
             GameOver();
+        }
+        else if (other.CompareTag("Item"))
+        {
+            Debug.Log("[충돌] 아이템 획득!");
+            ScoreManager.Instance.AddScore(10);
+            other.gameObject.SetActive(false);
         }
     }
 
     public void ActivateInvincibility(float duration)
     {
-        StartCoroutine(InvincibilityCoroutine(duration));
+        if (!isInvincible)
+        {
+            StartCoroutine(InvincibilityCoroutine(duration));
+        }
     }
 
     private IEnumerator InvincibilityCoroutine(float duration)
     {
-        isDead = true;
+        isInvincible = true;
+        Debug.Log("[무적] 시작");
         yield return new WaitForSeconds(duration);
-        isDead = false;
+        isInvincible = false;
+        Debug.Log("[무적] 종료");
     }
-    
+
     public void GameOver()
     {
-        // 게임 멈추기
+        Debug.Log("[게임 오버] Time.timeScale = 0");
+
         Time.timeScale = 0f;
-        buttonManager.ShowGameOver();
-        // 추후 UI 연결 가능 (Game Over 화면 띄우기)
+
+        if (loginClient != null && loginClient.startPanel != null)
+        {
+            loginClient.startPanel.SetActive(true);
+        }
+        else
+        {
+            Debug.LogWarning("[GameOver] loginClient 또는 startPanel이 연결되지 않았습니다.");
+        }
+
+        if (ScoreManager.Instance != null)
+        {
+            int finalScore = ScoreManager.Instance.GetCurrentScore();
+            Debug.Log($"[게임 오버] 최종 점수: {finalScore}");
+
+            ScoreManager.Instance.SendScoreToServer();
+        }
+    }
+
+    public void ResetState()
+    {
+        isDead = false;
+        isInvincible = false;
     }
 }

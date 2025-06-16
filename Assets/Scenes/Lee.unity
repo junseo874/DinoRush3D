@@ -809,8 +809,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scoreText: {fileID: 2037796651}
-  score: 0
-  scoreIncreaseRate: 10
+  currentScore: 0
 --- !u!1 &314257779
 GameObject:
   m_ObjectHideFlags: 0
@@ -1143,9 +1142,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52f6e1161b6d64f5e8c05e3d8cd11c26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnPoint: {fileID: 1902421614}
+  player: {fileID: 1986018169}
   tilePool: {fileID: 172571673}
-  tileCount: 7
+  initialTileCount: 5
   tileLength: 20
 --- !u!4 &433043220
 Transform:
@@ -1961,7 +1960,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5f1d32d6abd14fff91f69142a404ac8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonManager: {fileID: 1751616771}
+  loginClient: {fileID: 0}
 --- !u!1 &548392790
 GameObject:
   m_ObjectHideFlags: 0
@@ -2312,12 +2311,11 @@ MonoBehaviour:
   loginBtn: {fileID: 826116493}
   playerNameText: {fileID: 460866457}
   playerHighScoreText: {fileID: 599404987}
-  rankingDisplays:
-  - {fileID: 1500714563}
-  - {fileID: 525491975}
-  - {fileID: 1181728943}
-  - {fileID: 883560563}
-  - {fileID: 533411206}
+  rankingDisplay1: {fileID: 0}
+  rankingDisplay2: {fileID: 0}
+  rankingDisplay3: {fileID: 0}
+  rankingDisplay4: {fileID: 0}
+  rankingDisplay5: {fileID: 0}
   chatInput: {fileID: 548392794}
   chatDisplay: {fileID: 99383608}
   sendBtn: {fileID: 1238067904}
@@ -4758,7 +4756,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad3a299d76d0b40dc8e2058aa63d1acc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameOverUI: {fileID: 0}
 --- !u!1 &1789426571
 GameObject:
   m_ObjectHideFlags: 0
@@ -4944,7 +4941,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1934707722
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5322,7 +5319,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5f1d32d6abd14fff91f69142a404ac8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonManager: {fileID: 1751616771}
+  loginClient: {fileID: 0}
 --- !u!114 &1986018163
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5336,8 +5333,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scoreText: {fileID: 2037796651}
-  score: 0
-  scoreIncreaseRate: 10
+  currentScore: 0
+--- !u!4 &1986018169 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2386384359788586094, guid: d7ef085e24e33094b8a075d51e37d83d, type: 3}
+  m_PrefabInstance: {fileID: 2081524958}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2037796649
 GameObject:
   m_ObjectHideFlags: 0
